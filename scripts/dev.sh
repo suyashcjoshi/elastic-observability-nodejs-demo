@@ -45,7 +45,7 @@ nohup node --env-file=.env src/partners.js >/tmp/partners.log 2>&1 &
 echo $! > /tmp/skyward-partners.pid
 echo "Partners starting on :4001-4004 (logs: /tmp/partners.log)"
 
-nohup npm run start:plain >/tmp/app.log 2>&1 &
+nohup npm run start >/tmp/app.log 2>&1 &
 echo $! > /tmp/skyward-app.pid
 echo "Skyward starting on :3000 (logs: /tmp/app.log)"
 

@@ -41,7 +41,7 @@ The same five commands work on your laptop, in a Codespace and for an AI coding 
 git clone https://github.com/suyashcjoshi/elastic-observability-nodejs-demo && cd elastic-observability-nodejs-demo
 npm install
 cp .env.example .env
-npm run dev          # starts Postgres, seeds it, starts the partners and the app
+npm run dev          # starts Postgres, seeds it, starts the partners and the app with Elastic
 npm run verify       # PASS means everything is working
 ```
 
@@ -58,11 +58,11 @@ Open http://localhost:3000, search **LHR → SFO** (pre-filled), date defaults t
    OTEL_EXPORTER_OTLP_ENDPOINT=https://<your-project>.ingest.<region>.elastic.cloud:443
    OTEL_EXPORTER_OTLP_HEADERS=Authorization=ApiKey <your-api-key>
    ```
-4. Run `npm run restart:elastic`. After about a minute, `skyward-search` appears under **Observability → Services**.
+4. Run `npm run dev`. After about a minute, `skyward-search` appears under **Observability → Services**.
 
 ### Step 3 — fix one problem at a time
 
-Change one `CHAOS_*` flag in `.env`, run `npm run restart:elastic`, search again, compare in Kibana.
+Change one `CHAOS_*` flag in `.env`, run `npm run dev`, search again, compare in Kibana.
 
 ### Expected results
 
@@ -151,7 +151,7 @@ const lastDest = history.rows[0]?.destination;
 ## Slow and fast side by side
 
 ```bash
-npm run dev                # partners + slow app on :3000
+npm run dev                # partners + slow app on :3000 (with Elastic)
 npm run start:fast         # fixed app on :3001
 npm run load               # load on :3000
 npm run load:fast          # same load on :3001
@@ -199,11 +199,10 @@ All settings live in `.env`. Copy `.env.example` to start.
 
 | Script | What it does |
 |---|---|
-| `npm run dev` | Start Postgres (Docker), seed, start partners and app without Elastic |
+| `npm run dev` | Start Postgres via Docker if not already running (demo convenience — not a real-world pattern), seed the DB, start partners and app with Elastic (EDOT) |
 | `npm run verify` | Check all endpoints; prints PASS or FAIL |
 | `npm run status` | Show whether the app and partners are running |
 | `npm run stop:all` | Stop everything started by `dev` |
-| `npm run restart:elastic` | Restart the app with Elastic (EDOT) |
 | `npm run start:fast` | Start the fixed app on :3001 as `skyward-search-fixed` |
 | `npm run load` / `npm run load:fast` | Load test :3000 / :3001 |
 | `npm test` | Smoke test suite |

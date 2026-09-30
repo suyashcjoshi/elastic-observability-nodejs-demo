@@ -53,6 +53,11 @@ app.get('/health', (_req, res) => {
   res.json({ ok: true });
 });
 
+// ── /api/config ───────────────────────────────────────────────────────────────
+app.get('/api/config', (_req, res) => {
+  res.json({ showLoadingTimer: process.env.SHOW_LOADING_TIMER !== 'false' });
+});
+
 // ── /api/search ───────────────────────────────────────────────────────────────
 app.get('/api/search', async (req, res, next) => {
   const { origin, destination, date, user: userId, purpose, sort = 'fastest' } = req.query;
@@ -85,15 +90,17 @@ app.get('/api/search', async (req, res, next) => {
     }
 
     const qs = `?origin=${origin}&destination=${destination}&date=${date}`;
-    const responded = [];
 
-    // Sequential partner calls — each waits for the previous to complete
-    for (const partner of PARTNERS) {
-      try {
+    const results = await Promise.allSettled(
+      PARTNERS.map(async partner => {
         const r = await fetch(partner.url + qs);
-        if (r.ok) responded.push({ partner, fares: await r.json() });
-      } catch { /* skip */ }
-    }
+        if (!r.ok) return null;
+        return { partner, fares: await r.json() };
+      })
+    );
+    const responded = results
+      .filter(r => r.status === 'fulfilled' && r.value)
+      .map(r => r.value);
 
     const allFares = responded.flatMap(({ fares }) => fares);
 
@@ -235,13 +242,11 @@ function chatReply(message) {
 app.post('/api/chat', async (req, res, next) => {
   const { message, user: userId } = req.body;
   try {
-    // Bug: missing await — pool.query() returns a Promise, not a QueryResult.
-    // Accessing .rows on a Promise is undefined; reading [0] from it throws TypeError.
     const history = pool.query(
       'SELECT destination FROM search_history WHERE user_id = $1 ORDER BY searched_at DESC LIMIT 1',
       [userId || null]
     );
-    const lastDest = history.rows[0].destination;
+    const lastDest = history.rows[0]?.destination;
 
     const reply = chatReply(message);
     req.log.info({ user: userId, lastDest }, 'chat reply sent');
