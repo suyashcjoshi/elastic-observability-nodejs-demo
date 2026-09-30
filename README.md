@@ -51,6 +51,15 @@ In a Codespace, click the badge at the top instead. The app is ready on port 300
 
 ### 2. Connect to Elastic
 
+Adding Elastic takes two commands and no code changes:
+
+```bash
+npm install @elastic/opentelemetry-node                  # already in package.json in this repo
+node --import @elastic/opentelemetry-node src/app.js     # what `npm start` runs
+```
+
+Then point it at your Elastic project:
+
 1. No Elastic account? Start a free trial at [cloud.elastic.co/registration](https://cloud.elastic.co/registration) and choose **Serverless → Observability**.
 2. In your project, open **Add data → Application → OpenTelemetry** and copy the endpoint and API key.
 3. Add them to `.env`:
