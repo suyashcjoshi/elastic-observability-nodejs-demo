@@ -72,18 +72,6 @@ npm run load               # load test :3000 (slow)
 npm run load:fast          # load test :3001 (fixed)
 ```
 
-## Chaos flags
-
-Set these in `.env`.
-
-| Flag | `true` (default) | `false` |
-|---|---|---|
-| `CHAOS_STAIRCASE` | Partners called one at a time | Partners called in parallel |
-| `CHAOS_GAP` | Slow duplicate removal | Fast duplicate removal |
-| `CHAOS_PARTNER` | No timeout | 1.5 s timeout and fallback |
-| `ENABLE_CHAOS` | — | Turns all three off |
-| `PENGUIN_DEGRADED` | Penguin Air adds 5.2 s and 15% 503 errors | Penguin Air is normal |
-
 ## Useful commands
 
 | Command | What it does |
@@ -95,19 +83,6 @@ Set these in `.env`.
 | `npm test` | Run smoke tests |
 
 To run with Docker instead: `docker compose up -d` (and `docker compose down` to stop).
-
-## Troubleshooting
-
-| Problem | Fix |
-|---|---|
-| Nothing in Kibana | Check the endpoint and API key in `.env`, run `npm run restart:elastic`, wait a minute |
-| Service named `unknown_service:node` | Set `OTEL_SERVICE_NAME` in `.env` and restart |
-| Traces but no logs | Set `ELASTIC_OTEL_NODE_ENABLE_LOG_SENDING=true` |
-| `bad option: --env-file` | Upgrade Node to 20.6 or newer |
-| `ECONNREFUSED 5432` | Postgres isn't running. Run `npm run dev` |
-| `npm run verify` fails right after `dev` | The app is still starting. Wait a few seconds and retry |
-| 502 in Codespaces | Run `npm run status`, then `npm run dev` |
-| Booking error with request ID | Expected while `CHAOS_PARTNER=true` |
 
 ## Learn more
 
