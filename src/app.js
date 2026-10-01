@@ -91,9 +91,10 @@ app.get('/api/search', async (req, res, next) => {
 
     const qs = `?origin=${origin}&destination=${destination}&date=${date}`;
 
+    // Fan out to all partners concurrently; a slow or failing partner is skipped
     const results = await Promise.allSettled(
       PARTNERS.map(async partner => {
-        const r = await fetch(partner.url + qs);
+        const r = await fetch(partner.url + qs, { signal: AbortSignal.timeout(1500) });
         if (!r.ok) return null;
         return { partner, fares: await r.json() };
       })
@@ -104,18 +105,13 @@ app.get('/api/search', async (req, res, next) => {
 
     const allFares = responded.flatMap(({ fares }) => fares);
 
-    // O(n²) dedupe — compares every fare against every already-seen fare
-    const unique = [];
-    for (let i = 0; i < allFares.length; i++) {
-      let dup = false;
-      for (let j = 0; j < unique.length; j++) {
-        if (allFares[i].id === unique[j].id) {
-          if (allFares[i].priceCents < unique[j].priceCents) unique[j] = allFares[i];
-          dup = true; break;
-        }
-      }
-      if (!dup) unique.push(allFares[i]);
+    // Dedupe by fare id, keeping the cheapest
+    const byId = new Map();
+    for (const fare of allFares) {
+      const existing = byId.get(fare.id);
+      if (!existing || fare.priceCents < existing.priceCents) byId.set(fare.id, fare);
     }
+    const unique = [...byId.values()];
 
     // Attach partner port for booking lookup
     const withPort = unique.map(f => ({
@@ -242,7 +238,7 @@ function chatReply(message) {
 app.post('/api/chat', async (req, res, next) => {
   const { message, user: userId } = req.body;
   try {
-    const history = pool.query(
+    const history = await pool.query(
       'SELECT destination FROM search_history WHERE user_id = $1 ORDER BY searched_at DESC LIMIT 1',
       [userId || null]
     );

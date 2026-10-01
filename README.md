@@ -10,8 +10,10 @@ A Node.js flight search app with four bugs on purpose. Use Elastic Observability
 The app has no OpenTelemetry code. Elastic gets its data from one startup flag:
 
 ```sh
-node --import @elastic/opentelemetry-node src/app.js
+node --env-file=.env --import @elastic/opentelemetry-node src/app.js
 ```
+
+That command (what `npm start` runs) starts only the app. To start everything (Postgres, partners and the app), run `npm run dev`.
 
 > **This is a learning demo.** The slow code is on purpose. Don't copy it into a real service.
 >
@@ -55,7 +57,7 @@ Adding Elastic takes two commands and no code changes:
 
 ```bash
 npm install @elastic/opentelemetry-node                  # already in package.json in this repo
-node --import @elastic/opentelemetry-node src/app.js     # what `npm start` runs
+node --env-file=.eok nv --import @elastic/opentelemetry-node src/app.js     # what `npm start` runs
 ```
 
 Then point it at your Elastic project:
@@ -67,7 +69,7 @@ Then point it at your Elastic project:
    OTEL_EXPORTER_OTLP_ENDPOINT=https://<your-project>.ingest.<region>.elastic.cloud:443
    OTEL_EXPORTER_OTLP_HEADERS=Authorization=ApiKey <your-api-key>
    ```
-4. Run `npm run dev`. After a minute, `skyward-search` shows up under **Observability → Services**.
+4. Run `npm run dev`. After a minute, the app shows up under **Observability → Services**. The service name comes from `service.name` in `OTEL_RESOURCE_ATTRIBUTES` (or `OTEL_SERVICE_NAME`) in `.env`, for example `skyward-travel-app` if you copied the snippet from Elastic. If it isn't set, EDOT picks a default name.
 
 ### 3. Fix one problem at a time
 
@@ -87,7 +89,6 @@ npm run load:fast          # load test :3001 (fixed)
 |---|---|
 | `npm run dev` | Start everything (Postgres, partners, app) |
 | `npm run verify` | Check all endpoints |
-| `npm run status` | Show what is running |
 | `npm run stop:all` | Stop everything |
 | `npm test` | Run smoke tests |
 

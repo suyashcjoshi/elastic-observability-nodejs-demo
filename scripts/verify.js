@@ -68,16 +68,16 @@ await check('/api/insights', async () => {
 });
 
 // ── /api/chat ─────────────────────────────────────────────────────────────────
-await check('/api/chat (503 service unavailable)', async () => {
+await check('/api/chat (200 reply)', async () => {
   const res = await fetch(`${BASE}/api/chat`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ message: 'Is the direct flight available?', user: 1 }),
   });
-  assert(res.status === 503, `expected 503, got ${res.status}`);
+  assert(res.status === 200, `expected 200, got ${res.status}`);
   assert(res.headers.get('x-request-id')?.startsWith('req_'), 'missing X-Request-Id');
   const b = await res.json();
-  assert(b.error === 'service_unavailable', 'expected error=service_unavailable');
+  assert(typeof b.reply === 'string' && b.reply.length > 0, 'expected a reply');
   assert(typeof b.request_id === 'string' && b.request_id.startsWith('req_'), 'missing request_id in body');
 });
 

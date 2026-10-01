@@ -131,17 +131,17 @@ test('GET /api/insights returns 200 with avg_price_cents and X-Request-Id', asyn
   assert.ok(Array.isArray(body.recent_searches), 'body should have recent_searches array');
 });
 
-test('POST /api/chat returns 503 service_unavailable with X-Request-Id', async () => {
+test('POST /api/chat returns 200 with a reply and X-Request-Id', async () => {
   const res = await fetch(`http://localhost:${appPort}/api/chat`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ message: 'Is the direct flight available?', user: 1 }),
   });
-  assert.equal(res.status, 503, 'chat status should be 503');
+  assert.equal(res.status, 200, 'chat status should be 200');
   assert.ok(res.headers.get('x-request-id')?.startsWith('req_'), 'X-Request-Id missing');
 
   const body = await res.json();
-  assert.equal(body.error, 'service_unavailable', 'error should be service_unavailable');
+  assert.ok(typeof body.reply === 'string' && body.reply.length > 0, 'reply missing');
   assert.ok(
     typeof body.request_id === 'string' && body.request_id.startsWith('req_'),
     `request_id missing or malformed: ${JSON.stringify(body)}`
