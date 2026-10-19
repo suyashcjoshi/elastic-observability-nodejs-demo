@@ -30,18 +30,3 @@ services:
         condition: service_healthy
       partners:
         condition: service_started
-
-  app-fixed:
-    build: .
-    ports:
-      - "3001:3000"
-    env_file: [.env]
-    environment:
-      DATABASE_URL: postgres://postgres:postgres@db:5432/skyward
-      ENABLE_CHAOS: "false"
-      OTEL_SERVICE_NAME: skyward-search-fixed
-    depends_on:
-      db:
-        condition: service_healthy
-      partners:
-        condition: service_started

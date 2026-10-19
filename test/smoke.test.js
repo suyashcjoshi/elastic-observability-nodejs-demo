@@ -55,7 +55,6 @@ before(async () => {
     ...process.env,
     DATABASE_URL: DB_URL,
     FARES_PER_PARTNER: '50',
-    ENABLE_CHAOS: 'false',
     PARTNER_LATENCY_MS: '10',
     PARTNER_FAIL_RATE: '0',
   };
@@ -131,7 +130,7 @@ test('GET /api/insights returns 200 with avg_price_cents and X-Request-Id', asyn
   assert.ok(Array.isArray(body.recent_searches), 'body should have recent_searches array');
 });
 
-test('POST /api/chat returns a reply in the AFTER build (500 only in BEFORE)', async () => {
+test('POST /api/chat returns a reply', async () => {
   const res = await fetch(`http://localhost:${appPort}/api/chat`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },

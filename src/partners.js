@@ -104,7 +104,6 @@ function createPartnerServer(port) {
   async function applyLatency() {
     if (isPenguin) {
       // Penguin Air is degraded: fixed 5.2 s delay + 15% 503.
-      // Sequential calls (CHAOS_STAIRCASE) accumulate all four latencies, pushing total > 5 s.
       if (Math.random() < 0.15) return 503;
       await new Promise(r => setTimeout(r, 5200));
     } else {

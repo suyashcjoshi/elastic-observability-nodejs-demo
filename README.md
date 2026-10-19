@@ -5,7 +5,7 @@
 [![Node 20.6+](https://img.shields.io/badge/node-%E2%89%A5_20.6-339933?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue?style=for-the-badge)](LICENSE)
 
-A Node.js flight search app with four bugs on purpose. Use Elastic Observability to find each one, fix it, and watch the app get better.
+A Node.js flight search app instrumented with Elastic Observability (EDOT). This is the **`fixed`** branch: the app runs with no intentional bugs. Check out `main` for the deliberately broken version used to demo finding and fixing problems in Elastic.
 
 The app has no OpenTelemetry code. Elastic gets its data from one startup flag:
 
@@ -15,22 +15,11 @@ node --env-file=.env --import @elastic/opentelemetry-node src/app.js
 
 That command (what `npm start` runs) starts only the app. To start everything (Postgres, partners and the app), run `npm run dev`.
 
-> **This is a learning demo.** The slow code is on purpose. Don't copy it into a real service.
->
 > **Using an AI coding tool?** Point it at [AGENTS.md](AGENTS.md).
 
 ## Architecture
 
 ![Architecture](architecture.jpeg)
-
-## The four problems
-
-| What you see | Cause | Where to look in Elastic | Fix |
-|---|---|---|---|
-| Search takes over 5 seconds | `CHAOS_STAIRCASE`: partners are called one after another | Trace waterfall shows a staircase of four HTTP spans | `CHAOS_STAIRCASE=false` (calls run in parallel) |
-| Chat shows "Error: unexpected server response" | Missing `await` on `pool.query()` in `/api/chat` | Errors tab shows a `TypeError` pointing at the line | Add `await` |
-| App feels frozen, chat says "Still connecting..." | `CHAOS_GAP`: slow duplicate-removal blocks the event loop | `/health` takes ~700 ms with no child spans; `nodejs.eventloop.delay` spikes | `CHAOS_GAP=false` (faster Map-based version) |
-| Booking fails with a request ID | `CHAOS_PARTNER`: no timeout on Penguin Air, which is slow and sometimes returns 503 | Dependencies view shows Penguin Air in red; error traces link to logs | `CHAOS_PARTNER=false` (1.5 s timeout and fallback) |
 
 ## Quick start
 
@@ -70,18 +59,6 @@ Then point it at your Elastic project:
    OTEL_EXPORTER_OTLP_HEADERS=Authorization=ApiKey <your-api-key>
    ```
 4. Run `npm run dev`. After a minute, the app shows up under **Observability → Services**. The service name comes from `service.name` in `OTEL_RESOURCE_ATTRIBUTES` (or `OTEL_SERVICE_NAME`) in `.env`, for example `skyward-travel-app` if you copied the snippet from Elastic. If it isn't set, EDOT picks a default name.
-
-### 3. Fix one problem at a time
-
-Change one `CHAOS_*` flag in `.env`, run `npm run dev`, search again, and compare in Kibana.
-
-To compare side by side:
-
-```bash
-npm run start:fast         # fixed app on :3001
-npm run load               # load test :3000 (slow)
-npm run load:fast          # load test :3001 (fixed)
-```
 
 ## Useful commands
 

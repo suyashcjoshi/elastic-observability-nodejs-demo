@@ -7,15 +7,11 @@
     "cpus": 2,
     "memory": "4gb"
   },
-  "forwardPorts": [3000, 3001],
+  "forwardPorts": [3000],
   "portsAttributes": {
     "3000": {
-      "label": "Skyward (chaos)",
+      "label": "Skyward",
       "onAutoForward": "openBrowser"
-    },
-    "3001": {
-      "label": "Skyward (fixed)",
-      "onAutoForward": "silent"
     },
     "4001": { "onAutoForward": "ignore" },
     "4002": { "onAutoForward": "ignore" },

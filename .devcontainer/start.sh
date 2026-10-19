@@ -29,7 +29,7 @@ pkill -f src/app.js     2>/dev/null || true
 sleep 1
 
 # Start mock partners (SkyJet :4001, AeroLuz :4002, Nimbus :4003, Zephyr :4004).
-# Reads latency/chaos vars from .env; DATABASE_URL from the container environment takes precedence.
+# Reads latency vars from .env; DATABASE_URL from the container environment takes precedence.
 nohup node --env-file=.env src/partners.js > /tmp/partners.log 2>&1 &
 echo "🤝 Mock partners starting (logs: /tmp/partners.log)"
 

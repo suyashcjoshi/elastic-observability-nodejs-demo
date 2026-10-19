@@ -356,16 +356,11 @@
   });
 
   // ── Keyboard shortcut ──────────────────────────────────
-  // S or Ctrl/Cmd+Enter runs the search; compare.html can also trigger it via postMessage.
+  // S or Ctrl/Cmd+Enter runs the search.
   function triggerSearch() {
     if (!searchBtn.disabled) form.requestSubmit();
   }
   document.addEventListener('keydown', (e) => {
-    // Inside compare.html: forward Space to the parent so it fires both panes
-    if (window.parent !== window && e.code === 'Space' &&
-        !/^(INPUT|SELECT|TEXTAREA)$/.test(document.activeElement.tagName)) {
-      e.preventDefault(); window.parent.postMessage({ type: 'skyward-fire' }, '*'); return;
-    }
     const typing = /^(INPUT|SELECT|TEXTAREA)$/.test(document.activeElement.tagName);
     if ((e.key === 's' || e.key === 'S') && !typing && !e.metaKey && !e.ctrlKey && !e.altKey) {
       e.preventDefault(); triggerSearch();

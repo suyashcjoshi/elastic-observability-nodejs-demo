@@ -67,25 +67,21 @@ await check('/api/insights', async () => {
   assert(Array.isArray(b.recent_searches), 'missing recent_searches array');
 });
 
-const { mode } = await fetch(`${BASE}/api/mode`).then(r => r.json()).catch(() => ({ mode: 'before' }));
-
 // ── /api/chat ─────────────────────────────────────────────────────────────────
-await check(`/api/chat (${mode === 'before' ? '200 internal_server_error body' : '200 reply'})`, async () => {
+await check('/api/chat (200 reply)', async () => {
   const res = await fetch(`${BASE}/api/chat`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ message: 'Is the direct flight available?', user: 1 }),
   });
-  if (mode !== 'before') { assert(res.status === 200, `expected 200, got ${res.status}`); return; }
   assert(res.status === 200, `expected 200, got ${res.status}`);
   assert(res.headers.get('x-request-id')?.startsWith('req_'), 'missing X-Request-Id');
   const b = await res.json();
-  assert(b.error === 'internal_server_error', 'expected error=internal_server_error');
-  assert(typeof b.request_id === 'string' && b.request_id.startsWith('req_'), 'missing request_id in body');
+  assert(typeof b.reply === 'string', 'missing reply');
 });
 
 // ── /api/book ─────────────────────────────────────────────────────────────────
-await check(`/api/book (${mode === 'before' ? '502 partner_unavailable' : '200 confirmed'})`, async () => {
+await check('/api/book (200 confirmed)', async () => {
   const flight_id = searchedFareId || `PN401_${nextThursday}`;
   const res = await fetch(`${BASE}/api/book`, {
     method: 'POST',
@@ -93,10 +89,6 @@ await check(`/api/book (${mode === 'before' ? '502 partner_unavailable' : '200 c
     body: JSON.stringify({ flight_id, user: 1 }),
   });
   assert(res.headers.get('x-request-id')?.startsWith('req_'), 'missing X-Request-Id');
-  if (mode === 'before') {
-    assert(res.status === 502, `expected 502, got ${res.status}`);
-    return;
-  }
   assert(res.status === 200, `expected 200, got ${res.status}`);
   const b = await res.json();
   assert(b.confirmed === true, 'expected confirmed=true');
