@@ -125,13 +125,6 @@ npm run test:live-llm  # optional: one call to your real model
 - [Quickstart: monitor application performance](https://www.elastic.co/docs/solutions/observability/get-started/quickstart-monitor-your-application-performance)
 - No cloud account? [Run Elastic locally](https://www.elastic.co/docs/deploy-manage/deploy/self-managed/local-development-installation-quickstart): `curl -fsSL https://elastic.co/start-local | sh -s -- --edot`
 
-### Additional resources about Elastic Observability for developers
-
-- [Drain Vercel into Elastic: serverless observability with nothing to install](https://www.elastic.co/observability-labs/blog/serverless-observability-vercel-elastic)
-- [Web Frontend Instrumentation and Monitoring with OpenTelemetry and Elastic](https://www.elastic.co/observability-labs/blog/web-frontend-instrumentation-with-opentelemetry)
-- [Four clicks from alert to root cause: how Elastic Observability links APM services to Kubernetes infrastructure](https://www.elastic.co/observability-labs/blog/apm-kubernetes-infrastructure-metrics-analysis)
-- [From five dashboards to one prompt: how we built an APM health monitor with Elastic Agent Builder](https://www.elastic.co/observability-labs/blog/apm-health-check-elastic-agent-builder)
-
 ## License
 
 Apache-2.0. See [LICENSE](LICENSE).
