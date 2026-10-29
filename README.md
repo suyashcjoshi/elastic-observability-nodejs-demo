@@ -124,6 +124,7 @@ npm run test:live-llm  # optional: one call to your real model
 - [EDOT Node.js setup](https://www.elastic.co/docs/reference/opentelemetry/edot-sdks/node/setup)
 - [Quickstart: monitor application performance](https://www.elastic.co/docs/solutions/observability/get-started/quickstart-monitor-your-application-performance)
 - No cloud account? Run Elastic locally: `curl -fsSL https://elastic.co/start-local | sh -s -- --edot`
+  - Caveat: a local Elastic stack has no built-in model, so the Elastic AI Agent won't work until you set up an AI model connector. Provide an API key for Elastic's hosted model or for your own model provider. See [Set up an LLM connector](https://www.elastic.co/docs/explore-analyze/ai-features/llm-guides/llm-connectors). Traces and logs work without it.
 
 ## License
 
